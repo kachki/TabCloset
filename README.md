@@ -1,6 +1,6 @@
 # TABCloset Chrome Extension
 
-TABCloset is a Chrome extension that helps you save, organize, and relaunch groups of URLs with notes. Perfect for knowledge workers, students, and power users who need to manage multiple sets of tabs for different workflows.
+TABCloset is a Chrome extension that helps you save, organize, and relaunch groups of URLs. Perfect for knowledge workers, students, and power users who need to manage multiple sets of tabs for different workflows.
 
 ## Features
 

@@ -8,7 +8,8 @@ const PLACEHOLDER_GROUPS = [
 // State management
 let groups = [];
 let currentGroupIndex = -1; // To keep track of the group being viewed
-let currentLayout = 'card'; // Default layout
+let currentLayout = 'card'; // Default layout: 'card' or 'circle'
+let draggedGroupIndex = -1; // To store the index of the group being dragged
 let currentTabInfo = null; // To store current tab details
 
 // DOM Elements
@@ -32,10 +33,8 @@ const deleteGroupBtn = document.getElementById('deleteGroupBtn');
 const closeLinksModalBtn = document.getElementById('closeLinksModalBtn');
 const darkModeToggle = document.getElementById('darkModeToggle');
 
-// Layout toggle buttons
-const layoutCardBtn = document.getElementById('layoutCardBtn');
-const layoutCircleBtn = document.getElementById('layoutCircleBtn');
-const layoutFaviconBtn = document.getElementById('layoutFaviconBtn');
+// Layout toggle button
+const layoutToggleBtn = document.getElementById('layoutToggleBtn');
 
 // Initialize the extension
 document.addEventListener('DOMContentLoaded', async () => {
@@ -73,29 +72,25 @@ async function toggleDarkMode() {
 async function loadLayoutPreference() {
     const result = await chrome.storage.local.get('currentLayout');
     currentLayout = result.currentLayout || 'card'; // Default to card layout
-    updateActiveLayoutButton();
+    updateLayoutToggleButton();
 }
 
-// Save layout preference to storage
-async function saveLayoutPreference(layout) {
-    currentLayout = layout;
+// Save layout preference to storage and toggle
+async function toggleLayout() {
+    currentLayout = (currentLayout === 'card') ? 'circle' : 'card';
     await chrome.storage.local.set({ currentLayout });
     renderGroups(); // Re-render groups with new layout
-    updateActiveLayoutButton();
+    updateLayoutToggleButton();
 }
 
-// Update active state of layout buttons
-function updateActiveLayoutButton() {
-    layoutCardBtn.classList.remove('active-layout');
-    layoutCircleBtn.classList.remove('active-layout');
-    layoutFaviconBtn.classList.remove('active-layout');
-
+// Update active state of layout button icon
+function updateLayoutToggleButton() {
     if (currentLayout === 'card') {
-        layoutCardBtn.classList.add('active-layout');
+        layoutToggleBtn.innerHTML = '🗂️'; // Card icon
+        layoutToggleBtn.title = 'Switch to Circle Layout';
     } else if (currentLayout === 'circle') {
-        layoutCircleBtn.classList.add('active-layout');
-    } else if (currentLayout === 'favicon') {
-        layoutFaviconBtn.classList.add('active-layout');
+        layoutToggleBtn.innerHTML = '◎'; // Circle icon
+        layoutToggleBtn.title = 'Switch to Card Layout';
     }
 }
 
@@ -115,17 +110,22 @@ async function saveGroups() {
     await chrome.storage.local.set({ groups });
 }
 
-// Render groups as cards with emoji and show saved links as cards
+// Render groups based on currentLayout
 function renderGroups() {
     groupsList.innerHTML = '';
+    // Adjust groupsList class based on currentLayout for specific CSS styling
+    if (currentLayout === 'circle') {
+        groupsList.classList.add('circles-layout-active');
+    } else {
+        groupsList.classList.remove('circles-layout-active');
+    }
+
     groups.forEach((group, groupIndex) => {
         let groupElement;
         if (currentLayout === 'card') {
             groupElement = createGroupCard(group, groupIndex);
         } else if (currentLayout === 'circle') {
             groupElement = createGroupCircle(group, groupIndex);
-        } else if (currentLayout === 'favicon') {
-            groupElement = createGroupFaviconRow(group, groupIndex);
         }
         groupsList.appendChild(groupElement);
     });
@@ -139,6 +139,11 @@ function renderGroups() {
 function createGroupCard(group, groupIndex) {
     const groupDiv = document.createElement('div');
     groupDiv.className = 'group-card';
+    groupDiv.setAttribute('draggable', 'true'); // Make draggable
+    groupDiv.dataset.index = groupIndex; // Store original index
+
+    // Drag event listeners for this group card
+    groupDiv.addEventListener('dragstart', handleDragStart);
 
     // Single click: show links list modal, with current tab as potential addition
     groupDiv.onclick = (e) => {
@@ -167,10 +172,8 @@ function createGroupCard(group, groupIndex) {
     // Dark Mode Toggle
     darkModeToggle.onclick = toggleDarkMode;
 
-    // Layout Toggles
-    layoutCardBtn.onclick = () => saveLayoutPreference('card');
-    layoutCircleBtn.onclick = () => saveLayoutPreference('circle');
-    layoutFaviconBtn.onclick = () => saveLayoutPreference('favicon');
+    // Layout Toggle
+    layoutToggleBtn.onclick = toggleLayout;
 
     return groupDiv;
 }
@@ -180,6 +183,12 @@ function createGroupCircle(group, groupIndex) {
     const groupDiv = document.createElement('div');
     groupDiv.className = 'group-circle';
     groupDiv.title = group.name;
+    groupDiv.setAttribute('draggable', 'true'); // Make draggable
+    groupDiv.dataset.index = groupIndex; // Store original index
+
+    // Drag event listeners for this group circle
+    groupDiv.addEventListener('dragstart', handleDragStart);
+
     groupDiv.onclick = (e) => {
         e.stopPropagation();
         showLinksListModal(groupIndex);
@@ -195,56 +204,6 @@ function createGroupCircle(group, groupIndex) {
 
     groupDiv.appendChild(emojiDiv);
     groupDiv.appendChild(nameDiv);
-    return groupDiv;
-}
-
-// Create a group favicon row element (new UI option)
-function createGroupFaviconRow(group, groupIndex) {
-    const groupDiv = document.createElement('div');
-    groupDiv.className = 'group-favicon-row-card';
-    groupDiv.title = group.name;
-    groupDiv.onclick = (e) => {
-        e.stopPropagation();
-        showLinksListModal(groupIndex);
-    };
-
-    const infoDiv = document.createElement('div');
-    infoDiv.className = 'group-info'; // Reusing existing class for basic info layout
-
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'group-title';
-    titleDiv.textContent = group.name;
-    infoDiv.appendChild(titleDiv);
-
-    const faviconsContainer = document.createElement('div');
-    faviconsContainer.className = 'favicons-row-container';
-
-    const maxFavicons = 10; // Max number of favicons to show in the row
-    const displayedLinks = group.links.slice(0, maxFavicons);
-
-    displayedLinks.forEach(link => {
-        const faviconImg = document.createElement('img');
-        faviconImg.className = 'favicon-row-item';
-        faviconImg.src = 'icons/default-favicon.png'; // Placeholder
-        chrome.runtime.sendMessage({ action: "getFavicon", url: link.url }, (response) => {
-            if (response && response.favicon) {
-                faviconImg.src = response.favicon;
-            }
-        });
-        faviconsContainer.appendChild(faviconImg);
-    });
-
-    if (group.links.length > maxFavicons) {
-        const moreText = document.createElement('span');
-        moreText.className = 'favicon-row-more-text';
-        const remaining = group.links.length - maxFavicons;
-        moreText.textContent = `+ ${remaining} more`;
-        faviconsContainer.appendChild(moreText);
-    }
-
-    infoDiv.appendChild(faviconsContainer);
-
-    groupDiv.appendChild(infoDiv);
     return groupDiv;
 }
 
@@ -447,9 +406,60 @@ function openAllLinks(links) {
     });
 }
 
+// Handle drag start event
+function handleDragStart(e) {
+    draggedGroupIndex = parseInt(e.target.dataset.index); // Store the index of the dragged item
+    e.dataTransfer.effectAllowed = 'move';
+    // Using a setTimeout to ensure the element is captured before the opacity changes
+    setTimeout(() => {
+        e.target.classList.add('dragging');
+    }, 0);
+}
+
+// Handle drag over event on the container (groupsList)
+function handleDragOver(e) {
+    e.preventDefault(); // Necessary to allow dropping
+    e.dataTransfer.dropEffect = 'move';
+
+    const draggingElement = document.querySelector('.dragging');
+    if (!draggingElement) return;
+
+    const container = e.currentTarget; // This is groupsList
+    const children = Array.from(container.children).filter(child => child !== draggingElement && child.classList.contains('group-card') || child.classList.contains('group-circle')); // Filter for actual group elements
+
+    let afterElement = children.find(child => {
+        const box = child.getBoundingClientRect();
+        return e.clientY < box.top + box.height / 2;
+    });
+
+    if (afterElement) {
+        container.insertBefore(draggingElement, afterElement);
+    } else if (children.length > 0) {
+        container.appendChild(draggingElement);
+    }
+}
+
+// Handle drag end event
+async function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    const newOrder = Array.from(groupsList.children)
+                            .filter(child => child.dataset.index !== undefined)
+                            .map(child => groups[parseInt(child.dataset.index)]);
+    groups = newOrder;
+    await saveGroups();
+    renderGroups(); // Re-render to ensure correct indices and clean up
+    draggedGroupIndex = -1; // Reset
+}
+
 // Setup event listeners
 function setupEventListeners() {
     newGroupBtn.onclick = showNewGroupModal;
+
+    // Add drag and drop event listeners to the groups container
+    groupsList.addEventListener('dragover', handleDragOver);
+    groupsList.addEventListener('drop', handleDragEnd); // Drop handled by dragend, which reorders
+    groupsList.addEventListener('dragleave', (e) => { /* Optional: visual feedback when leaving */ });
+    groupsList.addEventListener('dragenter', (e) => { e.preventDefault(); /* Necessary for dragover to fire */ });
 
     document.getElementById('saveGroupBtn').onclick = async () => {
         const name = groupNameInput.value.trim();
@@ -495,10 +505,8 @@ function setupEventListeners() {
     // Dark Mode Toggle
     darkModeToggle.onclick = toggleDarkMode;
 
-    // Layout Toggles
-    layoutCardBtn.onclick = () => saveLayoutPreference('card');
-    layoutCircleBtn.onclick = () => saveLayoutPreference('circle');
-    layoutFaviconBtn.onclick = () => saveLayoutPreference('favicon');
+    // Layout Toggle
+    layoutToggleBtn.onclick = toggleLayout;
 
     window.onclick = (event) => {
         if (event.target === newGroupModal) {
