@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "TABCloset",
+  "version": "1.0",
+  "description": "Save, organize, and relaunch groups of URLs with notes",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self' data: chrome:;"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+} 

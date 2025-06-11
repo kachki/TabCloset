@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TABCloset</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container scrollable">
+        <header>
+            <h1>TABCloset</h1>
+            <div class="header-actions">
+                <button id="darkModeToggle" class="btn-icon">🌙</button>
+                <button id="newGroupBtn" class="btn-icon">+</button>
+            </div>
+        </header>
+
+        <div class="groups-container" id="mainScrollableArea">
+            <div id="groupsList" class="groups-list">
+                <!-- Groups will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- New Group Modal -->
+        <div id="newGroupModal" class="modal">
+            <div class="modal-content">
+                <h2>Create New Group</h2>
+                <input type="text" id="groupName" placeholder="Enter group name">
+                <input type="text" id="groupEmoji" placeholder="Choose emoji (e.g. 💼)">
+                <div class="modal-actions">
+                    <button id="cancelGroupBtn" class="btn-secondary">Cancel</button>
+                    <button id="saveGroupBtn" class="btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Link Modal -->
+        <div id="addLinkModal" class="modal">
+            <div class="modal-content">
+                <h2>Save Current Tab</h2>
+                <a id="currentTabLink" href="#" target="_blank" class="current-tab-display"></a>
+                <input type="hidden" id="linkTitle">
+                <input type="hidden" id="linkUrl">
+                <div class="modal-actions" style="justify-content: center;">
+                    <button id="saveLinkBtn" class="btn-primary">Save Here</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links List Modal -->
+        <div id="linksListModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="groupTitleInModal">Group Name</h2>
+                    <div class="modal-header-actions">
+                        <button id="openAllLinksBtn" class="btn-primary">Open All</button>
+                        <button id="deleteGroupBtn" class="btn-secondary">Delete Group</button>
+                    </div>
+                </div>
+                <div id="linksListContainer" class="links-list-modal-container">
+                    <!-- Links will be dynamically added here -->
+                </div>
+                <div class="modal-actions">
+                    <button id="closeLinksModalBtn" class="btn-secondary">Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- UI Layout Toggle Buttons -->
+        <div class="layout-toggles">
+            <button id="layoutCardBtn" class="btn-icon active-layout" title="Card Layout">🗂️</button>
+            <button id="layoutCircleBtn" class="btn-icon" title="Circle Layout">◎</button>
+            <button id="layoutFaviconBtn" class="btn-icon" title="Favicon Grid Layout">▦</button>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html> 
