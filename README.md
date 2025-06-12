@@ -27,9 +27,7 @@ TABCloset is a sleek and modern Chrome extension designed to help you save, orga
 3.  **Add Links**: Open a group by clicking on its card. The current tab will appear as a potential addition. Click "Save Here" to add it.
 4.  **Manage Links**: Within a group's link list:
     *   Double-click a link to open it in a new tab.
-    *   Click the '↗️' icon to open a specific link.
-    *   Click the '📝' icon to add or edit notes for a link.
-    *   Click the '🗑️' icon to delete a link.
+    *   Click the 'x' icon to delete a link.
     *   Click "Open All" to launch all links in the group.
 5.  **Reorder Groups**: Drag and drop group cards to change their order in the main view.
 6.  **Toggle Dark Mode**: Click the moon/sun icon in the header to switch between light and dark themes.
