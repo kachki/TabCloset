@@ -8,7 +8,6 @@ const PLACEHOLDER_GROUPS = [
 // State management
 let groups = [];
 let currentGroupIndex = -1; // To keep track of the group being viewed
-let currentLayout = 'card'; // Default layout: 'card' or 'circle'
 let draggedGroupIndex = -1; // To store the index of the group being dragged
 let currentTabInfo = null; // To store current tab details
 
@@ -19,6 +18,7 @@ const newGroupModal = document.getElementById('newGroupModal');
 const addLinkModal = document.getElementById('addLinkModal');
 const groupNameInput = document.getElementById('groupName');
 const groupEmojiInput = document.getElementById('groupEmoji');
+const emojiPickerContainer = document.getElementById('emojiPickerContainer');
 const linkTitleInput = document.getElementById('linkTitle');
 const linkUrlInput = document.getElementById('linkUrl');
 const linkNotesInput = document.getElementById('linkNotes');
@@ -33,20 +33,17 @@ const deleteGroupBtn = document.getElementById('deleteGroupBtn');
 const closeLinksModalBtn = document.getElementById('closeLinksModalBtn');
 const darkModeToggle = document.getElementById('darkModeToggle');
 
-// Layout toggle button
-const layoutToggleBtn = document.getElementById('layoutToggleBtn');
-
 // Initialize the extension
 document.addEventListener('DOMContentLoaded', async () => {
     await loadGroups();
     await loadThemePreference(); // Load theme preference
-    await loadLayoutPreference(); // Load layout preference
     renderGroups();
     setupEventListeners();
     // Pre-fetch current tab info
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
         currentTabInfo = tabs[0];
     });
+    initializeEmojiPicker(); // Initialize the emoji picker
 });
 
 // Load theme preference from storage
@@ -54,9 +51,9 @@ async function loadThemePreference() {
     const result = await chrome.storage.local.get('darkMode');
     if (result.darkMode) {
         document.body.classList.add('dark-mode');
-        darkModeToggle.innerHTML = '☀️'; // Sun icon for dark mode
+        darkModeToggle.innerHTML = '<img src="icons/sun_icon.png" alt="Sun Icon" class="icon-img">'; // Sun icon for dark mode
     } else {
-        darkModeToggle.innerHTML = '🌙'; // Moon icon for light mode
+        darkModeToggle.innerHTML = '<img src="icons/moon_icon.png" alt="Moon Icon" class="icon-img">'; // Moon icon for light mode
     }
 }
 
@@ -65,33 +62,7 @@ async function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     const isDarkMode = document.body.classList.contains('dark-mode');
     await chrome.storage.local.set({ darkMode: isDarkMode });
-    darkModeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
-}
-
-// Load layout preference from storage
-async function loadLayoutPreference() {
-    const result = await chrome.storage.local.get('currentLayout');
-    currentLayout = result.currentLayout || 'card'; // Default to card layout
-    updateLayoutToggleButton();
-}
-
-// Save layout preference to storage and toggle
-async function toggleLayout() {
-    currentLayout = (currentLayout === 'card') ? 'circle' : 'card';
-    await chrome.storage.local.set({ currentLayout });
-    renderGroups(); // Re-render groups with new layout
-    updateLayoutToggleButton();
-}
-
-// Update active state of layout button icon
-function updateLayoutToggleButton() {
-    if (currentLayout === 'card') {
-        layoutToggleBtn.innerHTML = '🗂️'; // Card icon
-        layoutToggleBtn.title = 'Switch to Circle Layout';
-    } else if (currentLayout === 'circle') {
-        layoutToggleBtn.innerHTML = '◎'; // Circle icon
-        layoutToggleBtn.title = 'Switch to Card Layout';
-    }
+    darkModeToggle.innerHTML = isDarkMode ? '<img src="icons/sun_icon.png" alt="Sun Icon" class="icon-img">': '<img src="icons/moon_icon.png" alt="Moon Icon" class="icon-img">';
 }
 
 // Load groups from storage, or use placeholders if empty
@@ -113,26 +84,12 @@ async function saveGroups() {
 // Render groups based on currentLayout
 function renderGroups() {
     groupsList.innerHTML = '';
-    // Adjust groupsList class based on currentLayout for specific CSS styling
-    if (currentLayout === 'circle') {
-        groupsList.classList.add('circles-layout-active');
-    } else {
-        groupsList.classList.remove('circles-layout-active');
-    }
+    groupsList.classList.remove('circles-layout-active');
 
     groups.forEach((group, groupIndex) => {
-        let groupElement;
-        if (currentLayout === 'card') {
-            groupElement = createGroupCard(group, groupIndex);
-        } else if (currentLayout === 'circle') {
-            groupElement = createGroupCircle(group, groupIndex);
-        }
+        let groupElement = createGroupCard(group, groupIndex);
         groupsList.appendChild(groupElement);
     });
-    // Dynamically resize popup
-    setTimeout(() => {
-        document.body.style.height = document.body.scrollHeight + 'px';
-    }, 50);
 }
 
 // Create a group card element (current UI)
@@ -172,38 +129,6 @@ function createGroupCard(group, groupIndex) {
     // Dark Mode Toggle
     darkModeToggle.onclick = toggleDarkMode;
 
-    // Layout Toggle
-    layoutToggleBtn.onclick = toggleLayout;
-
-    return groupDiv;
-}
-
-// Create a group circle element (new UI option)
-function createGroupCircle(group, groupIndex) {
-    const groupDiv = document.createElement('div');
-    groupDiv.className = 'group-circle';
-    groupDiv.title = group.name;
-    groupDiv.setAttribute('draggable', 'true'); // Make draggable
-    groupDiv.dataset.index = groupIndex; // Store original index
-
-    // Drag event listeners for this group circle
-    groupDiv.addEventListener('dragstart', handleDragStart);
-
-    groupDiv.onclick = (e) => {
-        e.stopPropagation();
-        showLinksListModal(groupIndex);
-    };
-
-    const emojiDiv = document.createElement('div');
-    emojiDiv.className = 'group-emoji';
-    emojiDiv.textContent = group.emoji || '📁';
-
-    const nameDiv = document.createElement('div');
-    nameDiv.className = 'group-name';
-    nameDiv.textContent = group.name;
-
-    groupDiv.appendChild(emojiDiv);
-    groupDiv.appendChild(nameDiv);
     return groupDiv;
 }
 
@@ -425,7 +350,7 @@ function handleDragOver(e) {
     if (!draggingElement) return;
 
     const container = e.currentTarget; // This is groupsList
-    const children = Array.from(container.children).filter(child => child !== draggingElement && child.classList.contains('group-card') || child.classList.contains('group-circle')); // Filter for actual group elements
+    const children = Array.from(container.children).filter(child => child !== draggingElement && child.classList.contains('group-card')); // Filter for actual group elements (only cards now)
 
     let afterElement = children.find(child => {
         const box = child.getBoundingClientRect();
@@ -505,9 +430,6 @@ function setupEventListeners() {
     // Dark Mode Toggle
     darkModeToggle.onclick = toggleDarkMode;
 
-    // Layout Toggle
-    layoutToggleBtn.onclick = toggleLayout;
-
     window.onclick = (event) => {
         if (event.target === newGroupModal) {
             newGroupModal.style.display = 'none';
@@ -520,4 +442,40 @@ function setupEventListeners() {
             currentGroupIndex = -1; // Reset
         }
     };
+}
+
+// Emoji Picker Initialization
+function initializeEmojiPicker() {
+    const picker = document.createElement('emoji-picker');
+    picker.setAttribute('locale', 'en');
+    picker.setAttribute('skin-tone-emoji', '🖐️');
+    emojiPickerContainer.appendChild(picker);
+
+    groupEmojiInput.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the modal from closing if it's in a modal
+        emojiPickerContainer.style.display = 'block';
+        // Position the picker relative to the input field or center it
+        // For now, it's absolutely positioned at the bottom-left of the modal
+    });
+
+    picker.addEventListener('emoji-click', (event) => {
+        groupEmojiInput.value = event.detail.unicode;
+        emojiPickerContainer.style.display = 'none';
+    });
+
+    // Close emoji picker when clicking outside
+    document.addEventListener('click', (event) => {
+        if (emojiPickerContainer.style.display === 'block' && !emojiPickerContainer.contains(event.target) && event.target !== groupEmojiInput) {
+            emojiPickerContainer.style.display = 'none';
+        }
+    });
+
+     // Close emoji picker when the modal is closed
+     cancelGroupBtn.addEventListener('click', () => {
+        emojiPickerContainer.style.display = 'none';
+    });
+
+    saveGroupBtn.addEventListener('click', () => {
+        emojiPickerContainer.style.display = 'none';
+    });
 } 

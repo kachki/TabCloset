@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TABCloset</title>
+    <title>TabCloset</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container scrollable">
         <header>
-            <h1>TABCloset</h1>
+            <h2>TabCloset</h2>
             <div class="header-actions">
-                <button id="darkModeToggle" class="btn-icon">🌙</button>
+                <button id="darkModeToggle" class="btn-icon"></button>
                 <button id="newGroupBtn" class="btn-icon">+</button>
             </div>
         </header>
@@ -28,6 +28,7 @@
                 <h2>Create New Group</h2>
                 <input type="text" id="groupName" placeholder="Enter group name">
                 <input type="text" id="groupEmoji" placeholder="Choose emoji (e.g. 💼)">
+                <div id="emojiPickerContainer" style="display: none; position: absolute; z-index: 1000; bottom: 0; left: 0;"></div>
                 <div class="modal-actions">
                     <button id="cancelGroupBtn" class="btn-secondary">Cancel</button>
                     <button id="saveGroupBtn" class="btn-primary">Save</button>
@@ -66,12 +67,8 @@
                 </div>
             </div>
         </div>
-
-        <!-- UI Layout Toggle Buttons -->
-        <div class="layout-toggles">
-            <button id="layoutToggleBtn" class="btn-icon" title="Toggle Layout">🗂️</button>
-        </div>
     </div>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <script src="popup.js"></script>
 </body>
 </html> 
