@@ -8,11 +8,9 @@ TABCloset is a sleek and modern Chrome extension designed to help you save, orga
 - 🔗 **Smart Link Saving**: Easily save the current tab to any group, with automatic title and URL capture.
 - ✨ **Intuitive UI**: Enjoy a streamlined and modern design with rounded corners for the extension popup and dynamic sizing.
 - 🚀 **Quick Access**: Open all links in a group with a single click, or double-click individual links to open them.
-- 📝 **Detailed Link Control**: Add notes to remember why you saved each link, and use individual 'Open' (↗️), 'Note' (📝), and 'Delete' (🗑️) buttons for precise management.
 - 😄 **Emoji Customization**: Personalize your groups with a dedicated emoji keyboard for easy selection.
 - 🌗 **Night Mode**: Toggle between light and dark themes for a comfortable browsing experience, with theme preference persistence.
 - 🔄 **Drag-and-Drop Reordering**: Easily reorder your groups by dragging and dropping them into your preferred arrangement.
-- 🖼️ **Dynamic Icons**: The extension features dynamic image icons for the dark mode toggle and is accessible via a custom icon in your browser toolbar.
 - 💾 **Local Storage**: All your groups and links are safely stored locally in your browser.
 
 ## Installation
