@@ -1,36 +1,49 @@
 # TABCloset Chrome Extension
 
-TABCloset is a Chrome extension that helps you save, organize, and relaunch groups of URLs. Perfect for knowledge workers, students, and power users who need to manage multiple sets of tabs for different workflows.
+TABCloset is a sleek and modern Chrome extension designed to help you save, organize, annotate, and relaunch groups of URLs. It's perfect for knowledge workers, students, and power users who need to manage multiple sets of tabs for different workflows, with a visually appealing and highly functional interface.
 
 ## Features
 
-- 🗂 Create and manage groups of related links
-- 🔗 Save links with titles and notes
-- 📂 Open all links in a group with one click
-- 🎨 Clean and modern user interface
-- 💾 Local storage for your data
+- 🗂 **Enhanced Group Management**: Create and manage groups of related links with a two-column card layout for improved organization.
+- 🔗 **Smart Link Saving**: Easily save the current tab to any group, with automatic title and URL capture.
+- ✨ **Intuitive UI**: Enjoy a streamlined and modern design with rounded corners for the extension popup and dynamic sizing.
+- 🚀 **Quick Access**: Open all links in a group with a single click, or double-click individual links to open them.
+- 📝 **Detailed Link Control**: Add notes to remember why you saved each link, and use individual 'Open' (↗️), 'Note' (📝), and 'Delete' (🗑️) buttons for precise management.
+- 😄 **Emoji Customization**: Personalize your groups with a dedicated emoji keyboard for easy selection.
+- 🌗 **Night Mode**: Toggle between light and dark themes for a comfortable browsing experience, with theme preference persistence.
+- 🔄 **Drag-and-Drop Reordering**: Easily reorder your groups by dragging and dropping them into your preferred arrangement.
+- 🖼️ **Dynamic Icons**: The extension features dynamic image icons for the dark mode toggle and is accessible via a custom icon in your browser toolbar.
+- 💾 **Local Storage**: All your groups and links are safely stored locally in your browser.
 
 ## Installation
 
-1. Clone or download this repository
-2. Open Chrome and go to `chrome://extensions/`
-3. Enable "Developer mode" in the top right
-4. Click "Load unpacked" and select the extension directory
+1.  Clone or download this repository.
+2.  Open Chrome and navigate to `chrome://extensions/`.
+3.  Enable "Developer mode" using the toggle in the top right corner.
+4.  Click the "Load unpacked" button and select the root directory of the cloned extension.
 
 ## Usage
 
-1. Click the TABCloset icon in your Chrome toolbar
-2. Create a new group using the "New Group" button
-3. Add links to your group with the "Add Link" button
-4. Click on any link to open it, or use "Open All" to launch all links in a group
-5. Add notes to remember why you saved each link
+1.  Click the TABCloset icon in your Chrome toolbar to open the extension popup.
+2.  **Create a New Group**: Click the "+" button in the header. Enter a group name and choose an emoji using the pop-up emoji keyboard.
+3.  **Add Links**: Open a group by clicking on its card. The current tab will appear as a potential addition. Click "Save Here" to add it.
+4.  **Manage Links**: Within a group's link list:
+    *   Double-click a link to open it in a new tab.
+    *   Click the '↗️' icon to open a specific link.
+    *   Click the '📝' icon to add or edit notes for a link.
+    *   Click the '🗑️' icon to delete a link.
+    *   Click "Open All" to launch all links in the group.
+5.  **Reorder Groups**: Drag and drop group cards to change their order in the main view.
+6.  **Toggle Dark Mode**: Click the moon/sun icon in the header to switch between light and dark themes.
 
 ## Development
 
 The extension is built using:
-- HTML/CSS/JavaScript
-- Chrome Extensions API
-- Chrome Storage API
+
+*   HTML/CSS/JavaScript
+*   Chrome Extensions API
+*   Chrome Storage API
+*   `emoji-picker-element` library for emoji selection
 
 ## License
 
