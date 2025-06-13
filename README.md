@@ -41,6 +41,16 @@ The extension is built using:
 *   Chrome Storage API
 *   `emoji-picker-element` library for emoji selection
 
+## Screenshots
+
+Here are some screenshots of the TABCloset extension in action:
+
+![Screenshot 2025-06-12 at 4.41.54 AM.png](UI/Screenshot%202025-06-12%20at%204.41.54%E2%80%AFAM.png)
+![Screenshot 2025-06-12 at 4.41.39 AM.png](UI/Screenshot%202025-06-12%20at%204.41.39%E2%80%AFAM.png)
+![Screenshot 2025-06-12 at 4.41.29 AM.png](UI/Screenshot%202025-06-12%20at%204.41.29%E2%80%AFAM.png)
+![Screenshot 2025-06-12 at 4.41.20 AM.png](UI/Screenshot%202025-06-12%20at%204.41.20%E2%80%AFAM.png)
+![Screenshot 2025-06-12 at 1.18.54 AM.png](UI/Screenshot%202025-06-12%20at%201.18.54%E2%80%AFAM.png) 
+
 ## License
 
-MIT License 
+MIT License

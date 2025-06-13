@@ -359,7 +359,8 @@ h1 {
     box-shadow: 0 8px 32px rgba(162, 89, 230, 0.13);
     display: flex;
     flex-direction: column;
-    max-height: 90vh;
+    max-height: 95vh;
+    height: fit-content;
     position: relative;
 }
 
@@ -415,6 +416,8 @@ h1 {
     overflow-y: auto;
     padding-right: 8px;
     margin-bottom: 0;
+    max-height: none;
+    height: auto;
 }
 
 /* Hide scrollbars for a cleaner look */

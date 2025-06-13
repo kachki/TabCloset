@@ -139,17 +139,8 @@ function createLinkCard(link, groupIndex, linkIndex) {
 
     const favicon = document.createElement('img');
     favicon.className = 'link-favicon';
-    // Use a placeholder while favicon is loading to prevent flickering
-    favicon.src = 'icons/default-favicon.png'; 
-
-    // Request favicon from background script
-    chrome.runtime.sendMessage({ action: "getFavicon", url: link.url }, (response) => {
-        if (response && response.favicon) {
-            favicon.src = response.favicon;
-        } else {
-            favicon.src = 'icons/default-favicon.png';
-        }
-    });
+    favicon.src = `chrome://favicon/${link.url}`;
+    favicon.onerror = () => favicon.src = 'icons/default-favicon.png';
 
     const info = document.createElement('div');
     info.className = 'link-info';
