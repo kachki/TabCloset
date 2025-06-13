@@ -33,6 +33,12 @@ const deleteGroupBtn = document.getElementById('deleteGroupBtn');
 const closeLinksModalBtn = document.getElementById('closeLinksModalBtn');
 const darkModeToggle = document.getElementById('darkModeToggle');
 
+const editNoteModal = document.getElementById('editNoteModal');
+const noteModalTitle = document.getElementById('noteModalTitle');
+const noteContent = document.getElementById('noteContent');
+const cancelNoteBtn = document.getElementById('cancelNoteBtn');
+const saveNoteBtn = document.getElementById('saveNoteBtn');
+
 // Initialize the extension
 document.addEventListener('DOMContentLoaded', async () => {
     await loadGroups();
@@ -156,9 +162,31 @@ function createLinkCard(link, groupIndex, linkIndex) {
     info.appendChild(title);
     info.appendChild(url);
 
-    // Actions container for buttons (now only delete)
+    // Actions container for buttons
     const actions = document.createElement('div');
     actions.className = 'link-actions-container';
+
+    // Open Link Button
+    const openLinkBtn = document.createElement('button');
+    openLinkBtn.className = 'btn-icon';
+    openLinkBtn.innerHTML = '↗️';
+    openLinkBtn.title = 'Open Link';
+    openLinkBtn.onclick = (e) => {
+        e.stopPropagation();
+        chrome.tabs.create({ url: link.url });
+    };
+    actions.appendChild(openLinkBtn);
+
+    // Note Link Button
+    const noteLinkBtn = document.createElement('button');
+    noteLinkBtn.className = 'btn-icon';
+    noteLinkBtn.innerHTML = '📝';
+    noteLinkBtn.title = 'Add/Edit Note';
+    noteLinkBtn.onclick = (e) => {
+        e.stopPropagation();
+        showEditNoteModal(groupIndex, linkIndex);
+    };
+    actions.appendChild(noteLinkBtn);
 
     // Delete Link Button
     const deleteLinkBtn = document.createElement('button');
@@ -175,10 +203,16 @@ function createLinkCard(link, groupIndex, linkIndex) {
     };
     actions.appendChild(deleteLinkBtn);
 
-    // Note display div (still exists for notes, but no toggle button)
+    // Note display div (still exists for notes, but now toggled by button)
     const noteDisplayDiv = document.createElement('div');
     noteDisplayDiv.className = 'link-notes-display';
-    noteDisplayDiv.textContent = link.notes || 'No note';
+    if (link.notes) {
+        noteDisplayDiv.textContent = link.notes;
+        noteDisplayDiv.style.display = 'block'; // Show if notes exist
+    } else {
+        noteDisplayDiv.textContent = 'No note'; // Placeholder
+        noteDisplayDiv.style.display = 'none'; // Hide if no notes
+    }
 
     linkDiv.appendChild(favicon);
     linkDiv.appendChild(info);
@@ -469,4 +503,32 @@ function initializeEmojiPicker() {
     saveGroupBtn.addEventListener('click', () => {
         emojiPickerContainer.style.display = 'none';
     });
-} 
+}
+
+// Show edit note modal
+function showEditNoteModal(groupIndex, linkIndex) {
+    editNoteModal.style.display = 'block';
+    editNoteModal.dataset.groupIndex = groupIndex;
+    editNoteModal.dataset.linkIndex = linkIndex;
+
+    const link = groups[groupIndex].links[linkIndex];
+    noteModalTitle.textContent = `Note for: ${link.title}`;
+    noteContent.value = link.notes || '';
+    noteContent.focus();
+}
+
+// Event Listeners for Edit Note Modal
+cancelNoteBtn.addEventListener('click', () => {
+    editNoteModal.style.display = 'none';
+});
+
+saveNoteBtn.addEventListener('click', async () => {
+    const groupIndex = editNoteModal.dataset.groupIndex;
+    const linkIndex = editNoteModal.dataset.linkIndex;
+    if (groupIndex !== undefined && linkIndex !== undefined) {
+        groups[groupIndex].links[linkIndex].notes = noteContent.value;
+        await saveGroups();
+        showLinksListModal(parseInt(groupIndex)); // Re-render the links list to show updated note
+    }
+    editNoteModal.style.display = 'none';
+}); 

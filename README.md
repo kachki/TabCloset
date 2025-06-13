@@ -45,11 +45,10 @@ The extension is built using:
 
 Here are some screenshots of the TABCloset extension in action:
 
-<img src="UI/Screenshot%202025-06-12%20at%204.41.54%E2%80%AFAM.png" width="300px">
-<img src="UI/Screenshot%202025-06-12%20at%204.41.39%E2%80%AFAM.png" width="300px">
-<img src="UI/Screenshot%202025-06-12%20at%204.41.29%E2%80%AFAM.png" width="300px">
-<img src="UI/Screenshot%202025-06-12%20at%204.41.20%E2%80%AFAM.png" width="300px">
-<img src="UI/Screenshot%202025-06-12%20at%201.18.54%E2%80%AFAM.png" width="300px">
+<img src="UI/slide_1.png" width="300px">
+<img src="UI/slide_2.png" width="300px">
+<img src="UI/slide_3.png" width="300px">
+<img src="UI/slide_4.png" width="300px">
 
 ## License
 
